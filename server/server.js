@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 const numCPUs = require("os").cpus().length;
 const { setupMaster, setupWorker } = require("@socket.io/sticky");
 const { createAdapter, setupPrimary } = require("@socket.io/cluster-adapter"); // make is it so that primary node can emit to everybody
+const socketMain = require("./socketMain");
 
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
@@ -56,8 +57,7 @@ if (cluster.isMaster) {
   // setup connection with the primary process
   setupWorker(io);
 
-  io.on("connection", (socket) => {
-    console.log(`someone connected on worker ${process.pid}`);
-    socket.emit("welcome", "welcome to our cluster driven socket.io server");
-  });
+  //socket is our file where our emits and listeners happen.
+  //it needs the io object
+  socketMain(io);
 }

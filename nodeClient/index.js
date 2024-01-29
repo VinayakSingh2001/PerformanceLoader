@@ -5,6 +5,26 @@
 // - socket.io-client
 
 const os = require("os"); //native to node!
+const io = require("socket.io-client");
+const socket = io("http://localhost:3000"); // 3000 is where our server is listening
+socket.on("connect", (socket) => {
+  // console.log("we connected to the server");
+  //we need a way to identify this machine to the server, for front-end usage
+  //we could use, socket.id, randomHash, ipAddress
+  //what about macA?
+  const nI = os.networkInterfaces(); //a list of all network interfaces on this machine
+  let macA; // mac Address
+  //loop through all nI until we find a non-internal one.
+  for (let key in nI) {
+    const isInternetFacing = !nI[key][0].internal;
+    if (isInternetFacing) {
+      //we have a mac address which we can use
+      macA = nI[key][0].mac;
+      break;
+    }
+  }
+  console.log(macA);
+});
 
 const cpuAverage = () => {
   const cpus = os.cpus();
