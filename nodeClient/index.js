@@ -6,8 +6,13 @@
 
 const os = require("os"); //native to node!
 const io = require("socket.io-client");
-const socket = io("http://localhost:3000"); // 3000 is where our server is listening
-socket.on("connect", (socket) => {
+const options = {
+  auth: {
+    token: "123kjhlkjnklsnflkdcmsldmefbjhhedkb",
+  },
+};
+const socket = io("http://localhost:3000", options); // 3000 is where our server is listening
+socket.on("connect", () => {
   // console.log("we connected to the server");
   //we need a way to identify this machine to the server, for front-end usage
   //we could use, socket.id, randomHash, ipAddress
@@ -23,7 +28,17 @@ socket.on("connect", (socket) => {
       break;
     }
   }
-  console.log(macA);
+  //console.log(macA);
+  const perfDataInterval = setInterval(async () => {
+    //every second call performance data and emit
+    const perfData = await performanceLoadData();
+    perfData.macA = macA;
+    socket.emit("perfData", perfData);
+  }, 1000);
+
+  socket.on("disconnect", () => {
+    clearInterval(perfDataInterval);
+  });
 });
 
 const cpuAverage = () => {
