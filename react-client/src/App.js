@@ -20,7 +20,11 @@ function App() {
       setPerformanceData(copyPerfData);
     });
   }, []);
-  return <Widget />;
+
+  const widgets = Object.values(performanceData).map((d) => (
+    <Widget data={d} key={d.macA} />
+  ));
+  return <>{widgets}</>;
 }
 
 export default App;
