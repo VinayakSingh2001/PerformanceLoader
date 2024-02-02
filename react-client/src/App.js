@@ -1,5 +1,5 @@
 import "./App.css";
-import socket from "./socketConnection";
+import socket from "./utilities/socketConnection";
 import { useEffect, useState } from "react";
 import Widget from "./perfDataComponets/Widget";
 
@@ -24,7 +24,7 @@ function App() {
   const widgets = Object.values(performanceData).map((d) => (
     <Widget data={d} key={d.macA} />
   ));
-  return <>{widgets}</>;
+  return <div className="container">{widgets}</div>;
 }
 
 export default App;
