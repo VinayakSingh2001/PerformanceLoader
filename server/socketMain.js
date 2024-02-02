@@ -1,6 +1,7 @@
 // where the socket.io listners and (mostly) emitters will be
-const socketMain = (io) => {
+const socketMain = (io, pid) => {
   io.on("connection", (socket) => {
+    let machineMacA;
     const auth = socket.handshake.auth;
     console.log(auth.token);
     if (auth.token === "123kjhlkjnklsnflkdcmsldmefbjhhedkb") {
@@ -17,8 +18,15 @@ const socketMain = (io) => {
     socket.emit("welcome", "welcome to our cluster driven socket.io server");
 
     socket.on("perfData", (data) => {
-      console.log("Tick...");
+      console.log("Tick...", pid);
       console.log(data);
+      if (!machineMacA) {
+        machineMacA = data.macA;
+        io.to("reactClient").emit("connectedOrNot", {
+          machineMacA,
+          isAlive: true,
+        });
+      }
       io.to("reactClient").emit("perfData", data);
     });
 
@@ -28,6 +36,14 @@ const socketMain = (io) => {
 
     socket.on("secondTest", (data) => {
       console.log(data);
+    });
+
+    socket.on("disconnect", (reason) => {
+      //a nodeClient just disconnected. let the front-end know
+      io.to("reactClient").emit("connectedOrNot", {
+        machineMacA,
+        isAlive: false,
+      });
     });
   });
 };
